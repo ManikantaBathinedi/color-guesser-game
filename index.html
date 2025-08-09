@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Guesser - Play with Friends!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1>🎨 Color Guesser</h1>
+                    <p>Can you guess the RGB color?</p>
+                </div>
+                <button id="helpBtn" class="btn btn-help" title="How to Play">
+                    <span>?</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="game-area">
+            <!-- Lobby Section -->
+            <div class="lobby-section" id="lobbySection">
+                <div class="lobby-panel">
+                    <h2>🎮 Multiplayer Lobby</h2>
+                    <div class="lobby-options">
+                        <div class="lobby-option">
+                            <h3>Create Room</h3>
+                            <p>Start a new game room for your team</p>
+                            <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+                            
+                            <div class="room-settings">
+                                <h4>Game Settings</h4>
+                                <div class="setting-group">
+                                    <label for="roundsPerPlayer">Rounds per player:</label>
+                                    <select id="roundsPerPlayer">
+                                        <option value="1">1 round</option>
+                                        <option value="3">3 rounds</option>
+                                        <option value="5" selected>5 rounds</option>
+                                        <option value="7">7 rounds</option>
+                                        <option value="10">10 rounds</option>
+                                    </select>
+                                </div>
+                                <div class="setting-group">
+                                    <label for="timePerRound">Time per round:</label>
+                                    <select id="timePerRound">
+                                        <option value="15">15 seconds</option>
+                                        <option value="30" selected>30 seconds</option>
+                                        <option value="45">45 seconds</option>
+                                        <option value="60">60 seconds</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button id="createRoomBtn" class="btn btn-primary">Create Room</button>
+                        </div>
+                        
+                        <div class="lobby-divider">OR</div>
+                        
+                        <div class="lobby-option">
+                            <h3>Join Room</h3>
+                            <p>Enter a room ID to join an existing game</p>
+                            <input type="text" id="joinPlayerName" placeholder="Enter your name" maxlength="20">
+                            <input type="text" id="roomId" placeholder="Room ID (e.g. ABC123)" maxlength="10">
+                            <button id="joinRoomBtn" class="btn btn-secondary">Join Room</button>
+                        </div>
+                    </div>
+                    
+                    <div class="solo-play">
+                        <button id="soloPlayBtn" class="btn btn-outline">Play Solo</button>
+                        <p>Practice alone without multiplayer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Section -->
+            <div class="room-section" id="roomSection" style="display: none;">
+                <div class="room-header">
+                    <div class="room-info">
+                        <h2>🏠 Room: <span id="currentRoomId">ABC123</span></h2>
+                        <p>Share this ID with your team to join!</p>
+                    </div>
+                    <div class="room-actions">
+                        <button id="copyRoomIdBtn" class="btn btn-secondary">Copy Room ID</button>
+                        <button id="shareRoomBtn" class="btn btn-primary">Share Room Link</button>
+                        <button id="leaveRoomBtn" class="btn btn-outline">Leave Room</button>
+                    </div>
+                </div>
+                
+                <div class="room-layout">
+                    <div class="players-panel">
+                        <h3>👥 Players (<span id="playerCount">1</span>)</h3>
+                        <div class="players-list" id="playersList">
+                            <!-- Players will be added dynamically -->
+                        </div>
+                        <div class="room-controls">
+                            <button id="startGameBtn" class="btn btn-primary" disabled>Start Game</button>
+                            <p class="start-hint">Waiting for host to start...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="leaderboard-panel">
+                        <h3>🏆 Leaderboard</h3>
+                        <div class="leaderboard" id="leaderboard">
+                            <div class="leaderboard-empty">
+                                <p>Game hasn't started yet!</p>
+                                <p>Scores will appear here during the game.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Section (existing game) -->
+            <div class="game-section" id="gameSection" style="display: none;">
+                <div class="game-container">
+                    <!-- Left Sidebar - Live Leaderboard -->
+                    <div class="leaderboard-sidebar">
+                        <div class="leaderboard-header">
+                            <h3>🏆 Live Leaderboard</h3>
+                            <div class="current-turn-info">
+                                <p><strong>Current Turn:</strong> <span id="currentPlayerName">Player 1</span></p>
+                                <p><strong>Round:</strong> <span id="currentPlayerRound">1</span> of <span id="totalRoundsPerPlayer">5</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="live-leaderboard" id="liveLeaderboard">
+                            <!-- Live scores will be updated here -->
+                        </div>
+                        
+                        <div class="game-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="gameProgress" style="width: 10%"></div>
+                            </div>
+                            <p class="progress-text">Progress: <span id="progressPercentage">10%</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Game Area -->
+                    <div class="main-game-area">
+                        <div class="game-header">
+                            <div class="game-info">
+                                <h2 id="turnTitle">Maasdsdf's Turn - Round 1</h2>
+                                <p>Room: <span id="gameRoomId">ABC123</span></p>
+                            </div>
+                            <div class="round-timer">
+                                <span class="timer-label">Time Left:</span>
+                                <span class="timer-value" id="roundTimer">30s</span>
+                            </div>
+                        </div>
+                        
+                        <div class="game-content">
+                            <div class="target-section">
+                                <h3>Match this Color</h3>
+                                <div class="target-color" id="targetColor"></div>
+                                <div class="target-info">
+                                    <p>Target RGB: <span id="targetRGB">(??, ??, ??)</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="guess-section">
+                                <h3>Pick Your Guess</h3>
+                                <div class="color-picker-container">
+                                    <canvas id="colorWheel" width="320" height="320"></canvas>
+                                    <div class="picker-crosshair" id="crosshair"></div>
+                                </div>
+                                <div class="picker-instructions">
+                                    <p class="selection-hint" id="selectionHint">Click on the color wheel to make your guess</p>
+                                </div>
+                                <button id="submitGuess" class="btn btn-primary" disabled>Submit Guess</button>
+                                
+                                <!-- Spectator Message -->
+                                <div class="spectator-mode" id="spectatorMode" style="display: none;">
+                                    <h3>👀 Spectating</h3>
+                                    <p>Watch <span id="spectatingPlayer">Player 1</span> make their guess!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Your Score:</span>
+                        <span class="stat-value" id="playerScore">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Best Score:</span>
+                        <span class="stat-value" id="bestScore">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Round:</span>
+                        <span class="stat-value" id="round">1</span>
+                    </div>
+                </div>
+
+                <div class="result-panel" id="resultPanel" style="display: none;">
+                    <div class="accuracy-display">
+                        <div class="accuracy-circle">
+                            <span class="accuracy-percentage" id="accuracyPercentage">0%</span>
+                            <span class="accuracy-label">Accuracy</span>
+                        </div>
+                    </div>
+                    <div class="result-details">
+                        <div class="color-comparison">
+                            <div class="color-result">
+                                <span class="color-label">Target</span>
+                                <div class="result-color" id="resultTargetColor"></div>
+                                <span class="rgb-values" id="resultTargetRGB"></span>
+                            </div>
+                            <div class="vs-divider">VS</div>
+                            <div class="color-result">
+                                <span class="color-label">Your Guess</span>
+                                <div class="result-color" id="resultGuessColor"></div>
+                                <span class="rgb-values" id="resultGuessRGB"></span>
+                            </div>
+                        </div>
+                        <div class="score-details">
+                            <p>Distance: <span id="colorDistance">0</span></p>
+                            <p>Points earned: <span id="pointsEarned">0</span></p>
+                        </div>
+                        
+                        <!-- Round Results -->
+                        <div class="round-results" id="roundResults">
+                            <h4>Round Results</h4>
+                            <div class="round-leaderboard" id="roundLeaderboard">
+                                <!-- Round results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    <button id="nextRound" class="btn btn-primary">Next Round</button>
+                </div>
+
+                <div class="controls">
+                    <button id="newGameBtn" class="btn btn-secondary">New Game</button>
+                    <button id="backToLobbyBtn" class="btn btn-outline">Back to Lobby</button>
+                </div>
+
+                <div class="message" id="message"></div>
+            </div>
+        </div>
+
+        <div class="how-to-play" id="helpPanel">
+            <div class="help-content">
+                <div class="help-header">
+                    <h3>How to Play</h3>
+                    <button id="closeHelp" class="close-btn">&times;</button>
+                </div>
+                <ul>
+                    <li>🎯 Look at the target color on the left</li>
+                    <li>🎨 Click anywhere on the color wheel to make your guess</li>
+                    <li>🚀 Submit your guess to see how accurate you are</li>
+                    <li>📊 Get scored based on how close your guess is (0-100%)</li>
+                    <li>🏆 Try to beat your best accuracy score!</li>
+                    <li>⌨️ Keyboard shortcuts: N (new game), Enter/Space (submit)</li>
+                </ul>
+                <div class="help-tip">
+                    <strong>💡 Pro Tip:</strong> Pay attention to the saturation and brightness of colors, not just the hue!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
